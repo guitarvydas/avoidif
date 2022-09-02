@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+textarea {
+}
+</style>
+</head>
+<body>
+
+<h1>Avoiding IF Statements</h1>
+<button onclick="generate ()">Generate</button>
+
+<br>
+<p id="status" > READY </p>
+<br>
+
+<p>Source:</p>
+<textarea id="dsl" rows="14" cols="130" placeholder="source file" style="background-color:oldlace;">
+</textarea>
+
+<p>transpiled output of pass 1:</p>
+<textarea id="pass1 transpiled" rows="5" cols="130" placeholder="transpiled output from pass 1" style="background-color:oldlace;">
+</textarea>
+
+<p>transpiled output of pass 2:</p>
+<textarea id="pass2 transpiled" rows="5" cols="130" placeholder="transpiled output from pass 2" style="background-color:oldlace;">
+</textarea>
+
+<p>transpiled output of pass 3:</p>
+<textarea id="pass3 transpiled" rows="5" cols="130" placeholder="transpiled output from pass 3" style="background-color:oldlace;">
+</textarea>
+
+
+<br>
+<br>
+<br>
+
+<!-- Ohm-JS -->
+    <script src="https://unpkg.com/ohm-js@16/dist/ohm.min.js"></script>
+
+
+<!-- transpiler -->
+    <script src="fmt-js/fmt-js.js"></script>
+    <script src="fmt-js/transpile.js"></script>
+
+<!-- utilities -->
+    <script src="panic.js"></script>
+
+<!-- mechanisms -->
+    <script src="selfid.js"></script>
+    
+<!-- passes -->
+    <script src="connections1.js"></script>
+    <script src="connections2.js"></script>
+    <script src="connections3.js"></script>
+
+<!-- source code -->
+    <script src="src.js"></script>
+
+<script>
+
+  function test (infield, outfield, grammarName, grammar, fmt) {
+      inputsrc = document.getElementById(infield).value;
+      [success, transpiled, errormessage] = transpile (inputsrc, grammarName, grammar, fmt);
+      if (success) {
+          document.getElementById(outfield).value = transpiled;
+          document.getElementById('status').innerHTML = "OK";
+	  return [true, transpiled];
+      } else {
+          document.getElementById(outfield).value = transpiled;
+          document.getElementById('status').innerHTML = "FAILED " + errormessage;
+	  return [false, transpiled];
+      }
+  }
+  
+  function generate () {
+      document.getElementById('dsl').innerHTML = src;
+
+      let r = undefined;
+      let pass1transpiled = undefined;
+      [r, pass1transpiled] = test ('dsl',               'pass1 transpiled', "Connections", connections1grammar,  connections1fmt);
+      console.log (`pass 1 ${r}`);
+
+      let r2 = undefined;
+      let pass2transpiled = undefined;
+      [r2, pass2transpiled] = test ('pass1 transpiled', 'pass2 transpiled', "Connections", connections2grammar,  connections2fmt);
+      console.log (`pass 2 ${r}`);
+
+      let r3 = undefined;
+      let pass3transpiled = undefined;
+      [r3, pass3transpiled] = test ('pass2 transpiled', 'pass3 transpiled', "Connections", connections3grammar,  connections3fmt);
+      console.log (`pass 3 ${r}`);
+
+  }
+
+  </script>
+</body>
+</html>
+
+
